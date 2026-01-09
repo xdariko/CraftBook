@@ -70,4 +70,4 @@ end
 
 gem "tailwindcss-rails", "~> 4.4"
 
-gem "view_component", "~> 3.20"
+gem "view_component", "~> 4.2"
