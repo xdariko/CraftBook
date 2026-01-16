@@ -19,15 +19,14 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :ingredients, only: [ :index, :new, :create, :show,  :edit, :destroy, :update ] do
+    resources :ingredients, only: [ :index, :new, :create, :show, :edit, :destroy, :update ] do
       member do
         get "delete", to: "ingredients#delete"
         post "add_tag"
+        get "add_tag_modal"
         delete "remove_tag/:ingredient_tag_id", to: "ingredients#remove_tag", as: :remove_tag
       end
     end
-
-
 
     resources :tags do
       member do

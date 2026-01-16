@@ -4,7 +4,8 @@
                       action: "turbo:submit-end->turbo-modal#submitEnd keyup@window->turbo-modal#closeWithKeyboard click@window->turbo-modal#closeBackground" } do %>
     <div class="fixed inset-0 flex items-center justify-center" style="z-index: 99999 !important; background-color: rgba(17, 24, 39, 0.6) !important;">
       <div class="relative w-full max-w-md mx-4 rounded-lg bg-stone-50 shadow-xl border border-stone-200">
-        <div class="flex justify-end p-4" style="justify-content: flex-end !important;">
+        <div class="flex items-center justify-between px-6 pt-6 pb-4">
+          <h1 class="text-2xl font-bold text-stone-800"><%= @title %></h1>
           <%= button_tag "Close",
                          data: { action: "turbo-modal#hideModal" },
                          type: "button",
@@ -14,9 +15,9 @@
             </svg>
           <% end %>
         </div>
-        <div class="px-6 pb-8 text-center">
+        
+        <div class="px-6 pb-8">
           <div class="mx-auto w-full max-w-[550px]">
-            <h1 class="mb-8 block text-xl font-medium text-stone-800"><%= @title %></h1>
             <%= content %>
           </div>
         </div>

@@ -15,3 +15,6 @@ application.register("section", SectionController)
 
 import TurboModalController from "./turbo_modal_controller"
 application.register("turbo-modal", TurboModalController)
+
+import TagSearchController from "./tag_search_controller"
+application.register("tag-search", TagSearchController)
