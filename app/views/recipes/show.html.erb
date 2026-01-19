@@ -1,112 +1,84 @@
 <%= render 'shared/navbar' %>
 
-<div class="flex justify-center w-full">
+<div class="container mx-auto px-4 pt-24 max-w-6xl">
+  <%= render partial: 'recipes/info_recipe', locals: { recipe: @recipe } %>
   
-<div class="flex flex-col w-full">   
-  <%= render 'info_recipe'%>
-
-  <div class="flex border rounded-lg p-6 bg-gray-50 mb-10 justify-center flex-wrap">
-    <div class="flex space-x-4 flex-wrap flex-grow">
-     <%= form_with(url: add_ingredient_project_recipe_path(@project, @recipe), method: :post, local: true, class: 'flex space-x-4 items-end flex-wrap') do |form| %>
-  <div class="mb-5 w-full md:w-60">
-    <%= form.label :item_id, "Ингредиент/Рецепт", class: 'block text-sm font-medium text-gray-700' %>
-    <select name="item_id" id="item_id" class="mt-1 w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" required>
-      <option value="" disabled selected>Выберите ингредиент или рецепт</option>
-      <% (@project.ingredients + @project.recipes).each do |item| %>
-         <% if item.is_a?(Ingredient) %>
-           <option value="<%= item.id %>" data-type="Ingredient">Ингредиент: <%= item.name %></option>
-         <% elsif item.is_a?(Recipe) %>
-           <option value="<%= item.id %>" data-type="Recipe">Рецепт: <%= item.name %></option>
-         <% end %>
-      <% end %>
-    </select>
-  </div>
-
-  <div class="mb-5 w-full md:w-40">
-    <%= form.label :quantity, "Количество", class: 'block text-sm font-medium text-gray-700' %>
-    <%= form.number_field :quantity,
-      class: 'mt-1 w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md',
-      value: 1,
-      min: 1,
-      max: 9223372036854775807
-    %>
-  </div>
-
-  <%= hidden_field_tag :item_type, nil, id: :item_type %>
-
-  <div class="mb-5 w-full lg:w-auto">
-    <%= form.submit "Добавить ингредиент/рецепт", class: 'hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none w-full lg:w-auto' %>
-  </div>
-<% end %>
-    </div>
-
-    <div class="flex space-x-4 flex-wrap flex-grow">
-      <%= form_with(url: add_tag_project_recipe_path(@project, @recipe), method: :post, local: true, class: 'flex space-x-4 items-end flex-wrap') do |form| %>
-        <div class="mb-5 w-full md:w-60">
-          <%= form.label :tag_id, "Тег", class: 'block text-sm font-medium text-gray-700' %>
-          <%= form.collection_select(:tag_id, @project.tags.all, :id, :name, { prompt: "Выберите тег" }, {
-            class: 'mt-1 w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md',
-            required: true
-            }) %>
-        </div>
-
-        <div class="mb-5 w-full md:w-40">
-          <%= form.label :quantity, "Количество", class: 'block text-sm font-medium text-gray-700' %>
-          <%= form.number_field :quantity,
-            class: 'mt-1 w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md',
-            placeholder: 'Количество',
-            value: 1,
-            min: 1,
-            max: 9223372036854775807
-          %>
-        </div>
-
-        <div class="mb-5 w-full lg:w-auto">
-          <%= form.submit "Добавить тег", class: 'hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none w-full lg:w-auto' %>
-        </div>
-      <% end %>
-    </div>
-  </div>
-
-
-
-
-  <div class="mb-10 p-4" data-section-target="ingredient">
-    <div class="relative mb-6">
-        <h2 class="text-2xl font-semibold relative z-10 bg-white inline-block">Ингредиенты</h2>
-      <div class="absolute inset-0 top-1/2 mt-1 border-t border-gray-300"></div>
-    </div>
-
-        <turbo-frame id="items_list" class="mt-2 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-    <% (@recipe.ingredient_recipes + @recipe.recipe_recipes).each do |item_recipe| %>
-      <%= render partial: "item_card", locals: { item_recipe: item_recipe } %>
-    <% end %>
-  </turbo-frame>
-      </turbo-frame>
-    
-  </div>
-
-
-  <div class="mb-10 p-4" data-section-target="tag">
-      <div class="relative mb-6">
-        <h2 class="text-2xl font-semibold relative z-10 bg-white inline-block">Теги</h2>
-          <div class="absolute inset-0 top-1/2 mt-1 border-t border-gray-300"></div>
+  <div class="mb-12">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-2xl font-bold text-stone-800 mb-1">Состав</h2>
       </div>
+      <span class="text-sm font-medium text-stone-600 bg-stone-100 px-3 py-1.5 rounded-full">
+        <%= @recipe.ingredient_recipes.count + @recipe.recipe_recipes.count + @recipe.recipe_tags.where(tag_type: 'as_ingredient').count %> элементов
+      </span>
+    </div>
     
-      <turbo-frame id="tags_list" class="mt-2 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        <% @recipe.recipe_tags.each do |recipe_tag| %>
-          <%= render partial: 'tag_card', locals: { tag: recipe_tag.tag, quantity: recipe_tag.quantity, recipe_tag: recipe_tag } %>   
+    <div id="items_list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div class="flex flex-col h-full group">
+        <%= link_to add_ingredient_modal_project_recipe_path(@project, @recipe),
+                   data: { turbo_frame: 'modal' },
+                   class: "block h-full flex flex-col bg-white rounded-xl border-2 border-dashed border-stone-300 hover:border-amber-400 hover:bg-amber-50 transition-all duration-200" do %>
+          <div class="flex-1 p-3 flex items-center justify-center aspect-square">
+            <div class="flex flex-col items-center justify-center w-full h-full">
+              <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-3 group-hover:bg-amber-200 transition-colors duration-200">
+                <svg class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-stone-600 group-hover:text-amber-700 transition-colors duration-200">Добавить элемент</span>
+            </div>
+          </div>
         <% end %>
-      </turbo-frame>
+      </div>
+      
+      <% all_items = @recipe.ingredient_recipes + @recipe.recipe_recipes + @recipe.recipe_tags.select(&:as_ingredient?) %>
+      
+      <% all_items.each do |item_recipe| %>
+        <%= render partial: 'recipes/item_card', locals: { 
+          item_recipe: item_recipe,
+          project: @project,
+          recipe: @recipe
+        } %>
+      <% end %>
+    </div>
+  </div>
+  
+  <div class="mb-12">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-2xl font-bold text-stone-800 mb-1">Теги</h2>
+      </div>
+      <span class="text-sm font-medium text-stone-600 bg-stone-100 px-3 py-1.5 rounded-full">
+        <%= @recipe.recipe_tags.select(&:as_tag?).count %> тегов
+      </span>
+    </div>
+    
+    <div id="tags_list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div class="flex flex-col h-full group">
+        <%= link_to add_tag_modal_project_recipe_path(@project, @recipe),
+                   data: { turbo_frame: 'modal' },
+                   class: "block h-full flex flex-col bg-white rounded-xl border-2 border-dashed border-stone-300 hover:border-amber-400 hover:bg-amber-50 transition-all duration-200" do %>
+          <div class="flex-1 p-3 flex items-center justify-center aspect-square">
+            <div class="flex flex-col items-center justify-center w-full h-full">
+              <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-3 group-hover:bg-amber-200 transition-colors duration-200">
+                <svg class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-stone-600 group-hover:text-amber-700 transition-colors duration-200">Добавить тег</span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <% @recipe.recipe_tags.select(&:as_tag?).each do |recipe_tag| %>
+        <%= render partial: 'recipes/tag_card', locals: { 
+          tag: recipe_tag.tag, 
+          recipe_tag: recipe_tag,
+          project: @project,
+          recipe: @recipe
+        } %>
+      <% end %>
+    </div>
   </div>
 </div>
-
-</div>
-
-<script>
-  document.getElementById('item_id').addEventListener('change', function() {
-    var selectedOption = this.options[this.selectedIndex];
-    var itemType = selectedOption.getAttribute('data-type');
-    document.getElementById('item_type').value = itemType;
-  });
-</script>

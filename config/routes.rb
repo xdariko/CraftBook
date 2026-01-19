@@ -9,13 +9,15 @@ Rails.application.routes.draw do
       get "export", to: "projects#export"
     end
 
-    resources :recipes, only: [ :index, :new, :create, :show,  :edit, :destroy, :update ] do
+    resources :recipes, only: [ :index, :new, :create, :show, :edit, :destroy, :update ] do
       member do
-      get "delete", to: "recipes#delete"
-      post "add_ingredient"
-      post "add_tag"
-      delete "remove_ingredient/:id", to: "recipes#remove_ingredient", as: :remove_ingredient
-      delete "remove_tag/:recipe_tag_id", to: "recipes#remove_tag", as: :remove_tag
+        get "delete", to: "recipes#delete"
+        post :add_ingredient
+        get :add_ingredient_modal
+        post :add_tag
+        get :add_tag_modal
+        delete "remove_ingredient/:id", to: "recipes#remove_ingredient", as: :remove_ingredient
+        delete "remove_tag/:recipe_tag_id", to: "recipes#remove_tag", as: :remove_tag
       end
     end
 
