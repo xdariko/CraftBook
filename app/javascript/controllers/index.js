@@ -18,3 +18,6 @@ application.register("turbo-modal", TurboModalController)
 
 import TagSearchController from "./tag_search_controller"
 application.register("tag-search", TagSearchController)
+
+import ItemSearchController from "./item_search_controller"
+application.register("item-search", ItemSearchController)

@@ -141,7 +141,10 @@ class RecipesController < ApplicationController
         end
 
       elsif item_type == "Tag"
-        existing_record = @recipe.recipe_tags.find_by(tag_id: item_id, tag_type: RecipeTag::TAG_TYPES[:as_ingredient])
+        existing_record = @recipe.recipe_tags.find_by(
+          tag_id: item_id,
+          tag_type: RecipeTag::TAG_TYPES[:as_ingredient]
+        )
 
         if existing_record
           existing_record.update(quantity: quantity)
@@ -149,7 +152,7 @@ class RecipesController < ApplicationController
           respond_to do |format|
             format.turbo_stream {
               render turbo_stream: turbo_stream.replace(
-                "tag_#{@item_recipe.tag.id}",
+                "ingredient_tag_#{@item_recipe.id}",
                 partial: "recipes/item_card",
                 locals: {
                   item_recipe: @item_recipe,
@@ -291,38 +294,36 @@ class RecipesController < ApplicationController
     end
 
     if @item_recipe
-      if @item_recipe.is_a?(RecipeTag)
-        item = @item_recipe.tag
-        item_type = "tag"
-      elsif @item_recipe.is_a?(IngredientRecipe)
-        item = @item_recipe.ingredient
-        item_type = "ingredient"
-      elsif @item_recipe.is_a?(RecipeRecipe)
-        item = @item_recipe.recipe_item
-        item_type = "recipe"
-      end
+      target =
+        if @item_recipe.is_a?(RecipeTag)
+          "ingredient_tag_#{@item_recipe.id}"
+        elsif @item_recipe.is_a?(IngredientRecipe)
+          "ingredient_#{@item_recipe.ingredient_id}"
+        else
+          "recipe_#{@item_recipe.recipe_item_id}"
+        end
 
       @item_recipe.destroy
 
       respond_to do |format|
-        format.turbo_stream {
-          render turbo_stream: turbo_stream.remove("#{item_type}_#{item.id}")
-        }
-        format.html {
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.remove(target)
+        end
+        format.html do
           redirect_to project_recipe_path(@project, @recipe),
-          notice: "#{@item_recipe.class.model_name.human} удален"
-        }
+                      notice: "#{@item_recipe.class.model_name.human} удален"
+        end
       end
     else
       respond_to do |format|
-        format.turbo_stream {
+        format.turbo_stream do
           flash.now[:alert] = "Не удалось найти запись."
           render turbo_stream: turbo_stream.update("flash-container", partial: "shared/flash")
-        }
-        format.html {
+        end
+        format.html do
           flash[:alert] = "Не удалось найти запись."
           redirect_to project_recipe_path(@project, @recipe)
-        }
+        end
       end
     end
   end
@@ -331,23 +332,24 @@ class RecipesController < ApplicationController
     @recipe_tag = RecipeTag.find_by(id: params[:recipe_tag_id])
 
     if @recipe_tag
-      tag_id = @recipe_tag.tag.id
+      dom_id = "recipe_tag_#{@recipe_tag.id}"
       @recipe_tag.destroy
 
       respond_to do |format|
-        format.turbo_stream {
-          render turbo_stream: turbo_stream.remove("tag_#{tag_id}")
-        }
-        format.html {
-          redirect_to project_recipe_path(@project, @recipe), notice: "Тег удален" }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.remove(dom_id)
+        end
+        format.html do
+          redirect_to project_recipe_path(@project, @recipe), notice: "Тег удален"
+        end
       end
     else
       respond_to do |format|
         format.turbo_stream { head :ok }
-        format.html {
+        format.html do
           flash[:alert] = "Не удалось найти тег."
           redirect_to project_recipe_path(@project, @recipe)
-        }
+        end
       end
     end
   end

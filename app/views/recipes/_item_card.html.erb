@@ -1,86 +1,94 @@
 <% if item_recipe.is_a?(RecipeTag) %>
-  <% item_type = "tag" %>
+  <% item_type = "ingredient_tag" %>
   <% item = item_recipe.tag %>
   <% item_key = :recipe_tag_id %>
+  <% dom_id = "#{item_type}_#{item_recipe.id}" %>
+  <% kind_label = "тег" %>
 <% elsif item_recipe.is_a?(IngredientRecipe) %>
   <% item_type = "ingredient" %>
   <% item = item_recipe.ingredient %>
   <% item_key = :ingredient_recipe_id %>
+  <% dom_id = "#{item_type}_#{item.id}" %>
+  <% kind_label = "ингредиент" %>
 <% elsif item_recipe.is_a?(RecipeRecipe) %>
   <% item_type = "recipe" %>
   <% item = item_recipe.recipe_item %>
   <% item_key = :recipe_recipe_id %>
+  <% dom_id = "#{item_type}_#{item.id}" %>
+  <% kind_label = "рецепт" %>
 <% end %>
 
-<div id="<%= item_type %>_<%= item.id %>" class="relative bg-white rounded-xl border border-stone-200 hover:border-amber-300 hover:shadow-sm transition-all duration-200 overflow-hidden group">
+<div id="<%= dom_id %>" class="relative group bg-white rounded-xl border border-stone-200 hover:border-amber-300 hover:shadow-sm transition-all duration-200 overflow-hidden">
   <div class="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
     <%= button_to remove_ingredient_project_recipe_path(@project, @recipe, item_key => item_recipe.id),
                  method: :delete,
                  form: { data: { turbo_frame: "_top" } },
                  class: "rounded-full p-2 bg-white shadow-sm border border-stone-200 hover:bg-red-50 hover:border-red-200 hover:text-red-500 transition-colors duration-200" do %>
-      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
       </svg>
     <% end %>
   </div>
 
-  <div class="aspect-square flex flex-col items-center justify-center bg-stone-50 p-3">
+  <div class="aspect-square overflow-hidden bg-stone-50">
     <% if item.respond_to?(:image) && item.image.attached? %>
-      <%= image_tag item.image, class: "object-contain w-full h-full rounded-lg" %>
+      <div class="w-full h-full">
+        <%= image_tag item.image, class: "object-cover w-full h-full" %>
+      </div>
     <% else %>
       <div class="flex flex-col items-center justify-center w-full h-full">
-        <span class="text-2xl font-bold text-stone-400">
-          <%= item.name[0..1].upcase %>
-        </span>
-        <span class="text-xs text-stone-500 mt-1">
-          <%= case item_recipe
-              when RecipeTag then 'тег'
-              when IngredientRecipe then 'ингредиент'
-              when RecipeRecipe then 'рецепт'
-              end %>
-        </span>
+        <span class="text-2xl font-bold text-stone-400"><%= item.name[0..1].upcase %></span>
+        <span class="text-xs text-stone-500 mt-1"><%= kind_label %></span>
       </div>
     <% end %>
   </div>
-  
+
   <div class="border-t border-stone-100 p-3">
     <h5 class="text-sm font-semibold text-stone-800 text-center truncate w-full mb-2">
       <%= item.name %>
     </h5>
-    
+
     <% if item_recipe.is_a?(RecipeTag) %>
-      <%= form_with(url: add_tag_project_recipe_path(@project, @recipe), 
-                  method: :post,
-                  data: { turbo_frame: "_top" },
-                  class: "flex items-center justify-center") do |form| %>
-        <%= hidden_field_tag :tag_id, item.id %>
-        <%= hidden_field_tag :quantity, item_recipe.quantity %>
-        
-        <input type="number"
-               name="quantity"
-               value="<%= item_recipe.quantity %>"
-               min="1"
-               onchange="this.form.requestSubmit()"
-               onblur="this.form.requestSubmit()"
-               class="w-20 text-center border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none py-2 px-3 hover:border-amber-300 transition-colors duration-200"
-               aria-label="Количество">
+      <%= form_with(url: add_ingredient_project_recipe_path(@project, @recipe),
+                    method: :post,
+                    data: { turbo_frame: "_top" },
+                    class: "flex items-center justify-center w-full") do |form| %>
+
+        <%= hidden_field_tag :item_id, item.id %>
+        <%= hidden_field_tag :item_type, "Tag" %>
+
+        <div class="flex items-center justify-center gap-2">
+          <span class="text-xs text-stone-500">Кол-во</span>
+          <input type="number"
+                 name="quantity"
+                 value="<%= item_recipe.quantity %>"
+                 min="1"
+                 onchange="this.form.requestSubmit()"
+                 onblur="this.form.requestSubmit()"
+                 class="w-20 text-center border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none py-2 px-3 hover:border-amber-300 transition-colors duration-200"
+                 aria-label="Количество">
+        </div>
       <% end %>
     <% else %>
-      <%= form_with(url: add_ingredient_project_recipe_path(@project, @recipe), 
-                  method: :post,
-                  data: { turbo_frame: "_top" },
-                  class: "flex items-center justify-center") do |form| %>
+      <%= form_with(url: add_ingredient_project_recipe_path(@project, @recipe),
+                    method: :post,
+                    data: { turbo_frame: "_top" },
+                    class: "flex items-center justify-center w-full") do |form| %>
+
         <%= hidden_field_tag :item_id, item.id %>
         <%= hidden_field_tag :item_type, item.class.name %>
-        
-        <input type="number"
-               name="quantity"
-               value="<%= item_recipe.quantity %>"
-               min="1"
-               onchange="this.form.requestSubmit()"
-               onblur="this.form.requestSubmit()"
-               class="w-20 text-center border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none py-2 px-3 hover:border-amber-300 transition-colors duration-200"
-               aria-label="Количество">
+
+        <div class="flex items-center justify-center gap-2">
+          <span class="text-xs text-stone-500">Кол-во</span>
+          <input type="number"
+                 name="quantity"
+                 value="<%= item_recipe.quantity %>"
+                 min="1"
+                 onchange="this.form.requestSubmit()"
+                 onblur="this.form.requestSubmit()"
+                 class="w-20 text-center border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none py-2 px-3 hover:border-amber-300 transition-colors duration-200"
+                 aria-label="Количество">
+        </div>
       <% end %>
     <% end %>
   </div>

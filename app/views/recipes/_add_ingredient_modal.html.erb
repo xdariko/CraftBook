@@ -6,15 +6,16 @@
        aria-labelledby="modal-title"
        role="dialog"
        aria-modal="true">
-       
+
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
       <div class="fixed inset-0 bg-stone-900/40 transition-opacity" data-action="click->turbo-modal#hideModal"></div>
-      <div class="relative inline-block align-bottom bg-stone-50 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full border border-stone-200">
 
+      <div class="relative inline-block align-bottom bg-stone-50 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full border border-stone-200">
         <div class="flex items-center justify-between px-6 pt-6">
           <div>
             <h1 class="text-2xl font-bold text-stone-800">Добавить элемент в рецепт</h1>
           </div>
+
           <button type="button"
                   data-action="turbo-modal#hideModal"
                   class="text-stone-400 hover:text-stone-600 bg-transparent hover:bg-stone-200 rounded-lg text-sm p-2 transition-colors duration-200">
@@ -31,40 +32,48 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <input type="text" 
+
+            <input type="text"
                    data-item-search-target="input"
                    data-action="input->item-search#search"
                    placeholder="Поиск по названию..."
                    class="w-full pl-10 pr-4 py-3 rounded-lg border border-stone-300 bg-white text-stone-800 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500">
           </div>
 
-          <div class="mb-4">
+          <div class="mb-2">
             <div class="border-b border-stone-200">
               <nav class="-mb-px flex space-x-8">
-                <button type="button" 
+                <button type="button"
                         data-item-search-target="tab"
                         data-type="all"
+                        data-action="click->item-search#switchTab"
                         class="tab-button border-b-2 border-transparent px-1 pb-3 text-sm font-medium text-stone-500 hover:text-stone-700 hover:border-stone-300 data-[active=true]:border-amber-500 data-[active=true]:text-amber-600"
                         data-active="true">
                   Все
                 </button>
+
                 <button type="button"
                         data-item-search-target="tab"
                         data-type="ingredient"
+                        data-action="click->item-search#switchTab"
                         class="tab-button border-b-2 border-transparent px-1 pb-3 text-sm font-medium text-stone-500 hover:text-stone-700 hover:border-stone-300 data-[active=true]:border-amber-500 data-[active=true]:text-amber-600"
                         data-active="false">
                   Ингредиенты
                 </button>
+
                 <button type="button"
                         data-item-search-target="tab"
                         data-type="recipe"
+                        data-action="click->item-search#switchTab"
                         class="tab-button border-b-2 border-transparent px-1 pb-3 text-sm font-medium text-stone-500 hover:text-stone-700 hover:border-stone-300 data-[active=true]:border-amber-500 data-[active=true]:text-amber-600"
                         data-active="false">
                   Рецепты
                 </button>
+
                 <button type="button"
                         data-item-search-target="tab"
                         data-type="tag"
+                        data-action="click->item-search#switchTab"
                         class="tab-button border-b-2 border-transparent px-1 pb-3 text-sm font-medium text-stone-500 hover:text-stone-700 hover:border-stone-300 data-[active=true]:border-amber-500 data-[active=true]:text-amber-600"
                         data-active="false">
                   Теги
@@ -74,208 +83,165 @@
           </div>
 
           <div class="flex-1 overflow-y-auto px-6 py-4 max-h-[60vh]" data-item-search-target="results">
-            <div data-item-type="ingredient">
-              <h3 class="text-lg font-semibold text-stone-800 mb-3">Ингредиенты</h3>
-              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                <% @available_ingredients.each do |ingredient| %>
-                  <div data-item-name="<%= ingredient.name.downcase %>" 
-                       data-item-type="ingredient"
-                       class="group">
-                    <%= link_to add_ingredient_project_recipe_path(@project, @recipe, 
-                                item_id: ingredient.id, 
-                                item_type: 'Ingredient', 
-                                quantity: 1), 
-                               data: { 
-                                 turbo_method: :post,
-                                 action: "turbo-modal#hideModal" 
-                               },
-                               class: "block h-full" do %>
-                      <div class="aspect-square bg-white rounded-xl border border-stone-200 hover:border-amber-300 hover:shadow-sm transition-all duration-200 overflow-hidden">
-                        <div class="h-4/5 flex items-center justify-center bg-stone-50 p-3">
-                          <% if ingredient.image.attached? %>
-                            <%= image_tag ingredient.image, class: "object-contain w-full h-full rounded-lg" %>
-                          <% else %>
-                            <div class="flex flex-col items-center justify-center w-full h-full">
-                              <span class="text-2xl font-bold text-stone-400"><%= ingredient.name[0..1].upcase %></span>
-                              <span class="text-xs text-stone-500 mt-1">ингредиент</span>
-                            </div>
-                          <% end %>
-                        </div>
-                        <div class="h-1/5 border-t border-stone-100 flex items-center justify-center px-2">
-                          <h5 class="text-sm font-semibold text-stone-800 text-center truncate w-full">
-                            <%= ingredient.name %>
-                          </h5>
-                        </div>
-                      </div>
-                    <% end %>
-                  </div>
-                <% end %>
-              </div>
-            </div>
+            <div class="space-y-8">
+              <section data-item-search-target="section" data-item-type="ingredient">
+                <h3 data-item-search-target="sectionTitle" class="text-lg font-semibold text-stone-800 mb-3">
+                  Ингредиенты
+                </h3>
 
-            <div data-item-type="recipe" class="mt-6">
-              <h3 class="text-lg font-semibold text-stone-800 mb-3">Рецепты</h3>
-              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                <% @available_recipes.each do |recipe| %>
-                  <div data-item-name="<%= recipe.name.downcase %>" 
-                       data-item-type="recipe"
-                       class="group">
-                    <%= link_to add_ingredient_project_recipe_path(@project, @recipe, 
-                                item_id: recipe.id, 
-                                item_type: 'Recipe', 
-                                quantity: 1), 
-                               data: { 
-                                 turbo_method: :post,
-                                 action: "turbo-modal#hideModal" 
-                               },
-                               class: "block h-full" do %>
-                      <div class="aspect-square bg-white rounded-xl border border-stone-200 hover:border-amber-300 hover:shadow-sm transition-all duration-200 overflow-hidden">
-                        <div class="h-4/5 flex items-center justify-center bg-stone-50 p-3">
-                          <% if recipe.image.attached? %>
-                            <%= image_tag recipe.image, class: "object-contain w-full h-full rounded-lg" %>
-                          <% else %>
-                            <div class="flex flex-col items-center justify-center w-full h-full">
-                              <span class="text-2xl font-bold text-stone-400"><%= recipe.name[0..1].upcase %></span>
-                              <span class="text-xs text-stone-500 mt-1">рецепт</span>
-                            </div>
-                          <% end %>
-                        </div>
-                        <div class="h-1/5 border-t border-stone-100 flex items-center justify-center px-2">
-                          <h5 class="text-sm font-semibold text-stone-800 text-center truncate w-full">
-                            <%= recipe.name %>
-                          </h5>
-                        </div>
-                      </div>
-                    <% end %>
-                  </div>
-                <% end %>
-              </div>
-            </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  <% @available_ingredients.each do |ingredient| %>
+                    <div data-item-name="<%= ingredient.name.downcase %>"
+                         data-item-type="ingredient"
+                         class="group">
+                      <%= link_to add_ingredient_project_recipe_path(@project, @recipe,
+                                  item_id: ingredient.id,
+                                  item_type: 'Ingredient',
+                                  quantity: 1),
+                                 data: { turbo_method: :post, action: "turbo-modal#hideModal" },
+                                 class: "block h-full" do %>
 
-            <div data-item-type="tag" class="mt-6">
-            <h3 class="text-lg font-semibold text-stone-800 mb-3">Теги (как ингредиенты)</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                <% @available_tags.each do |tag| %>
-                <div data-item-name="<%= tag.name.downcase %>" 
-                    data-item-type="tag"
-                    class="group">
-                    <%= link_to add_ingredient_project_recipe_path(@project, @recipe, 
-                                item_id: tag.id, 
-                                item_type: 'Tag', 
-                                quantity: 1), 
-                            data: { 
-                                turbo_method: :post,
-                                action: "turbo-modal#hideModal" 
-                            },
-                            class: "block h-full" do %>
-                      <div class="aspect-square bg-white rounded-xl border border-stone-200 hover:border-amber-300 hover:shadow-sm transition-all duration-200 overflow-hidden">
-                        <div class="h-4/5 flex items-center justify-center bg-stone-50 p-3">
-                          <% if tag.image.attached? %>
-                            <%= image_tag tag.image, class: "object-contain w-full h-full rounded-lg" %>
-                          <% else %>
-                            <div class="flex flex-col items-center justify-center w-full h-full">
-                              <span class="text-2xl font-bold text-stone-400"><%= tag.name[0..1].upcase %></span>
-                              <span class="text-xs text-stone-500 mt-1">тег</span>
-                            </div>
-                          <% end %>
+                        <div class="relative aspect-square group bg-white rounded-xl border border-stone-200 hover:border-amber-300 hover:shadow-sm transition-all duration-200 overflow-hidden">
+                          <div class="h-4/5 overflow-hidden bg-stone-50">
+                            <% if ingredient.image.attached? %>
+                              <div class="w-full h-full">
+                                <%= image_tag ingredient.image, class: "object-cover w-full h-full" %>
+                              </div>
+                            <% else %>
+                              <div class="flex flex-col items-center justify-center w-full h-full">
+                                <span class="text-2xl font-bold text-stone-400"><%= ingredient.name[0..1].upcase %></span>
+                                <span class="text-xs text-stone-500 mt-1">ингредиент</span>
+                              </div>
+                            <% end %>
+                          </div>
+                          <div class="h-1/5 border-t border-stone-100 flex items-center justify-center px-2">
+                            <h5 class="text-sm font-semibold text-stone-800 text-center truncate w-full">
+                              <%= ingredient.name %>
+                            </h5>
+                          </div>
                         </div>
-                        <div class="h-1/5 border-t border-stone-100 flex items-center justify-center px-2">
-                          <h5 class="text-sm font-semibold text-stone-800 text-center truncate w-full">
-                            <%= tag.name %>
-                          </h5>
+
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </section>
+
+              <section data-item-search-target="section" data-item-type="recipe">
+                <h3 data-item-search-target="sectionTitle" class="text-lg font-semibold text-stone-800 mb-3">
+                  Рецепты
+                </h3>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  <% @available_recipes.each do |recipe| %>
+                    <div data-item-name="<%= recipe.name.downcase %>"
+                         data-item-type="recipe"
+                         class="group">
+                      <%= link_to add_ingredient_project_recipe_path(@project, @recipe,
+                                  item_id: recipe.id,
+                                  item_type: 'Recipe',
+                                  quantity: 1),
+                                 data: { turbo_method: :post, action: "turbo-modal#hideModal" },
+                                 class: "block h-full" do %>
+
+                        <div class="relative aspect-square group bg-white rounded-xl border border-stone-200 hover:border-amber-300 hover:shadow-sm transition-all duration-200 overflow-hidden">
+                          <div class="h-4/5 overflow-hidden bg-stone-50">
+                            <% if recipe.image.attached? %>
+                              <div class="w-full h-full">
+                                <%= image_tag recipe.image, class: "object-cover w-full h-full" %>
+                              </div>
+                            <% else %>
+                              <div class="flex flex-col items-center justify-center w-full h-full">
+                                <span class="text-2xl font-bold text-stone-400"><%= recipe.name[0..1].upcase %></span>
+                                <span class="text-xs text-stone-500 mt-1">рецепт</span>
+                              </div>
+                            <% end %>
+                          </div>
+                          <div class="h-1/5 border-t border-stone-100 flex items-center justify-center px-2">
+                            <h5 class="text-sm font-semibold text-stone-800 text-center truncate w-full">
+                              <%= recipe.name %>
+                            </h5>
+                          </div>
                         </div>
-                      </div>
-                    <% end %>
+
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </section>
+
+              <section data-item-search-target="section" data-item-type="tag">
+                <h3 data-item-search-target="sectionTitle" class="text-lg font-semibold text-stone-800 mb-3">
+                  Теги (как ингредиенты)
+                </h3>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  <% @available_tags.each do |tag| %>
+                    <div data-item-name="<%= tag.name.downcase %>"
+                         data-item-type="tag"
+                         class="group">
+                      <%= link_to add_ingredient_project_recipe_path(@project, @recipe,
+                                  item_id: tag.id,
+                                  item_type: 'Tag',
+                                  quantity: 1),
+                                 data: { turbo_method: :post, action: "turbo-modal#hideModal" },
+                                 class: "block h-full" do %>
+
+                        <div class="relative aspect-square group bg-white rounded-xl border border-stone-200 hover:border-amber-300 hover:shadow-sm transition-all duration-200 overflow-hidden">
+                          <div class="h-4/5 overflow-hidden bg-stone-50">
+                            <% if tag.image.attached? %>
+                              <div class="w-full h-full">
+                                <%= image_tag tag.image, class: "object-cover w-full h-full" %>
+                              </div>
+                            <% else %>
+                              <div class="flex flex-col items-center justify-center w-full h-full">
+                                <span class="text-2xl font-bold text-stone-400"><%= tag.name[0..1].upcase %></span>
+                                <span class="text-xs text-stone-500 mt-1">тег</span>
+                              </div>
+                            <% end %>
+                          </div>
+                          <div class="h-1/5 border-t border-stone-100 flex items-center justify-center px-2">
+                            <h5 class="text-sm font-semibold text-stone-800 text-center truncate w-full">
+                              <%= tag.name %>
+                            </h5>
+                          </div>
+                        </div>
+
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </section>
+
+              <% if @available_ingredients.empty? && @available_recipes.empty? && @available_tags.empty? %>
+                <div class="text-center py-8">
+                  <div class="text-stone-400 mb-2">
+                    <svg class="w-12 h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </div>
-                <% end %>
-              </div>
+                  <p class="text-stone-600">Нет доступных элементов</p>
+                  <p class="text-sm text-stone-500 mt-1">Создайте новый элемент в проекте</p>
+
+                  <div class="flex flex-wrap gap-3 justify-center mt-4">
+                    <%= link_to "Создать ингредиент", new_project_ingredient_path(@project),
+                                data: { turbo_frame: 'modal' },
+                                class: "inline-flex items-center px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-500 transition-colors duration-200 text-sm font-medium" %>
+
+                    <%= link_to "Создать рецепт", new_project_recipe_path(@project),
+                                data: { turbo_frame: 'modal' },
+                                class: "inline-flex items-center px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-500 transition-colors duration-200 text-sm font-medium" %>
+
+                    <%= link_to "Создать тег", new_project_tag_path(@project),
+                                data: { turbo_frame: 'modal' },
+                                class: "inline-flex items-center px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-500 transition-colors duration-200 text-sm font-medium" %>
+                  </div>
+                </div>
+              <% end %>
             </div>
-            
-            <% if @available_ingredients.empty? && @available_recipes.empty? && @available_tags.empty? %>
-              <div class="text-center py-8">
-                <div class="text-stone-400 mb-2">
-                  <svg class="w-12 h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <p class="text-stone-600">Нет доступных элементов</p>
-                <p class="text-sm text-stone-500 mt-1">Создайте новый элемент в проекте</p>
-                <div class="flex space-x-3 justify-center mt-4">
-                  <%= link_to "Создать ингредиент", new_project_ingredient_path(@project),
-                              data: { turbo_frame: 'modal' },
-                              class: "inline-flex items-center px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-500 transition-colors duration-200 text-sm font-medium" %>
-                  <%= link_to "Создать рецепт", new_project_recipe_path(@project),
-                              data: { turbo_frame: 'modal' },
-                              class: "inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors duration-200 text-sm font-medium" %>
-                  <%= link_to "Создать тег", new_project_tag_path(@project),
-                              data: { turbo_frame: 'modal' },
-                              class: "inline-flex items-center px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-500 transition-colors duration-200 text-sm font-medium" %>
-                </div>
-              </div>
-            <% end %>
           </div>
         </div>
       </div>
     </div>
   </div>
 <% end %>
-
-<script>
-  document.addEventListener('turbo:load', function() {
-    const itemSearchController = {
-      search() {
-        const query = this.inputTarget.value.toLowerCase();
-        const activeTab = this.activeTab || 'all';
-        const items = this.resultsTarget.querySelectorAll('[data-item-name]');
-        
-        items.forEach(item => {
-          const itemName = item.dataset.itemName;
-          const itemType = item.dataset.itemType;
-          const showBySearch = query === '' || itemName.includes(query);
-          const showByTab = activeTab === 'all' || itemType === activeTab;
-          
-          if (showBySearch && showByTab) {
-            item.style.display = 'block';
-          } else {
-            item.style.display = 'none';
-          }
-        });
-        
-        ['ingredient', 'recipe', 'tag'].forEach(type => {
-          const section = this.resultsTarget.querySelector(`[data-item-type="${type}"]`);
-          if (section) {
-            const hasVisibleItems = section.querySelectorAll('[data-item-name][style*="block"]').length > 0;
-            section.style.display = hasVisibleItems ? 'block' : 'none';
-          }
-        });
-      },
-      
-      switchTab(tabButton) {
-        document.querySelectorAll('[data-item-search-target="tab"]').forEach(btn => {
-          btn.dataset.active = 'false';
-        });
-        tabButton.dataset.active = 'true';
-        this.activeTab = tabButton.dataset.type;
-        this.search();
-      }
-    };
-    
-    const input = document.querySelector('[data-item-search-target="input"]');
-    const results = document.querySelector('[data-item-search-target="results"]');
-    const tabs = document.querySelectorAll('[data-item-search-target="tab"]');
-    
-    if (input && results) {
-      itemSearchController.inputTarget = input;
-      itemSearchController.resultsTarget = results;
-      itemSearchController.activeTab = 'all';
-      
-      input.addEventListener('input', () => itemSearchController.search());
-      
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => itemSearchController.switchTab(tab));
-      });
-      
-      itemSearchController.search(); 
-    }
-  });
-</script>
