@@ -6,8 +6,8 @@ class Tag < ApplicationRecord
   has_one_attached :image
   validates :name, presence: true
 
-  def as_json(options = {})
-    super(options.merge(methods: :image_url))
+  def export_image
+    image.attached? ? image.filename.to_s : nil
   end
 
   def image_url

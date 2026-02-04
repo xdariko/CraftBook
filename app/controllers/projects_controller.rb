@@ -96,13 +96,17 @@ class ProjectsController < ApplicationController
   end
 
   def export
+    payload = @project.export_payload
+
     respond_to do |format|
       format.html
-      format.json {
-        render json: JSON.pretty_generate(@project.as_json),
-             filename: "#{@project.name.parameterize}.json",
-             content_type: "application/json"
-      }
+      format.json do
+        send_data(
+          JSON.pretty_generate(payload),
+          filename: "#{@project.name.parameterize}.json",
+          type: "application/json; charset=utf-8"
+        )
+      end
     end
   end
 

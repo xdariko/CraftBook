@@ -17,35 +17,6 @@ class Recipe < ApplicationRecord
   has_one_attached :image
   validates :name, presence: true
 
-  validates :name, presence: true
-
-
-  def as_json(options = {})
-    super(options.merge(
-      include: {
-        ingredients: {
-          include: {
-            ingredient_recipes: {
-              only: [ :quantity ], # Включаем количество
-              include: {
-                ingredient: {
-                  methods: [ :image_url ] # Включаем URL изображения ингредиента
-                }
-              }
-            }
-          }
-        },
-        tags: {
-          methods: [ :image_url ] # Включаем URL изображения тега
-        },
-        sub_recipes: {
-          methods: [ :image_url, :recipe_recipe_quantity ] # Включаем URL изображения подрецепта и его количество
-        }
-      },
-      methods: [ :image_url ] # Включаем URL изображения рецепта
-    ))
-  end
-
   def image_url
     Rails.application.routes.url_helpers.rails_blob_url(image, only_path: true) if image.attached?
   end
@@ -56,5 +27,9 @@ class Recipe < ApplicationRecord
 
   def recipe_recipe_quantity(recipe)
     recipe_recipes.find_by(recipe_item: recipe).quantity
+  end
+
+  def export_image
+    image.attached? ? image.filename.to_s : nil
   end
 end

@@ -6,16 +6,9 @@ class Ingredient < ApplicationRecord
   has_one_attached :image
 
   validates :name, presence: true
-
-  validates :name, presence: true
-
-  def as_json(options = {})
-    super(options.merge(
-      include: {
-        tags: {}
-      },
-      methods: :image_url
-    ))
+  
+  def export_image
+    image.attached? ? image.filename.to_s : nil
   end
 
   def image_url
