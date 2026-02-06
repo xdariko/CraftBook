@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  ingridient: one
+  ingredient: one
   tag: one
 
 two:
-  ingridient: two
+  ingredient: two
   tag: two
