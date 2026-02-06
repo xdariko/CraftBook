@@ -65,8 +65,17 @@ jobs:
 
       - name: Install JS deps
         run: yarn install --frozen-lockfile
-
-      - name: Build assets (JS + CSS)
+      
+      - name: Debug Tailwind install
+              run: |
+                node -v
+                yarn -v
+                ls -la
+                ls -la node_modules/.bin || true
+                yarn list --pattern tailwindcss || true
+                yarn why tailwindcss || true
+                
+      - name: Build assets
         run: |
           yarn build:js
           yarn build:css
