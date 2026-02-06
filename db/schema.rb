@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_19_161051) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_140204) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -68,25 +68,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_161051) do
     t.index ["project_id"], name: "index_ingredients_on_project_id"
   end
 
-  create_table "ingredients_recipes", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "ingridient_id", null: false
-    t.integer "quantity"
-    t.integer "recipe_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["ingridient_id"], name: "index_ingredients_recipes_on_ingridient_id"
-    t.index ["recipe_id"], name: "index_ingredients_recipes_on_recipe_id"
-  end
-
-  create_table "ingredients_tags", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "ingridient_id", null: false
-    t.integer "tag_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["ingridient_id"], name: "index_ingredients_tags_on_ingridient_id"
-    t.index ["tag_id"], name: "index_ingredients_tags_on_tag_id"
-  end
-
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -125,16 +106,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_161051) do
     t.index ["project_id"], name: "index_recipes_on_project_id"
   end
 
-  create_table "recipes_tags", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "quantity"
-    t.integer "recipe_id", null: false
-    t.integer "tag_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["recipe_id"], name: "index_recipes_tags_on_recipe_id"
-    t.index ["tag_id"], name: "index_recipes_tags_on_tag_id"
-  end
-
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -168,18 +139,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_161051) do
   add_foreign_key "ingredient_tags", "ingredients"
   add_foreign_key "ingredient_tags", "tags"
   add_foreign_key "ingredients", "projects"
-  add_foreign_key "ingredients_recipes", "ingridients"
-  add_foreign_key "ingredients_recipes", "recipes"
-  add_foreign_key "ingredients_tags", "ingridients"
-  add_foreign_key "ingredients_tags", "tags"
   add_foreign_key "projects", "users"
   add_foreign_key "recipe_recipes", "recipes"
   add_foreign_key "recipe_recipes", "recipes", column: "recipe_item_id"
   add_foreign_key "recipe_tags", "recipes"
   add_foreign_key "recipe_tags", "tags"
   add_foreign_key "recipes", "projects"
-  add_foreign_key "recipes_tags", "recipes"
-  add_foreign_key "recipes_tags", "tags"
   add_foreign_key "sessions", "users"
   add_foreign_key "tags", "projects"
 end
