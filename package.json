@@ -5,8 +5,8 @@
     "build:js": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
     "watch:js": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --watch",
 
-    "build:css": "tailwindcss --input ./app/assets/stylesheets/application.tailwind.css --output ./app/assets/builds/tailwind.css",
-    "watch:css": "tailwindcss --input ./app/assets/stylesheets/application.tailwind.css --output ./app/assets/builds/tailwind.css --watch",
+    "build:css": "npx --no-install tailwindcss --input ./app/assets/stylesheets/application.tailwind.css --output ./app/assets/builds/tailwind.css",
+    "watch:css": "npx --no-install tailwindcss --input ./app/assets/stylesheets/application.tailwind.css --output ./app/assets/builds/tailwind.css --watch",
 
     "build": "yarn build:js",
     "watch": "yarn watch:js"
