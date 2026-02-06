@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -18,14 +18,14 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
+      - name: Brakeman
         run: bundle exec brakeman --no-pager
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -34,25 +34,46 @@ jobs:
           bundler-cache: true
 
       - name: Rubocop
+        run: bundle exec rubocop -A
+
+      - name: Rubocop check
         run: bundle exec rubocop -f github
 
   test:
     runs-on: ubuntu-latest
     env:
-        RAILS_ENV: test
+      RAILS_ENV: test
+      CI: true
+
     steps:
-        - uses: actions/checkout@v4
-    
-        - uses: ruby/setup-ruby@v1
-          with:
-            ruby-version: .ruby-version
-            bundler-cache: true
-    
-        - name: Install packages
-          run: sudo apt-get update && sudo apt-get install --no-install-recommends -y sqlite3 libvips
-    
-        - name: Prepare DB
-          run: bundle exec rails db:prepare
-    
-        - name: Run tests
-          run: bundle exec rails test
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install OS packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y sqlite3 libvips
+
+      - name: Install JS deps
+        run: yarn install --frozen-lockfile
+
+      - name: Build assets (JS + CSS)
+        run: |
+          yarn build:js
+          yarn build:css
+
+      - name: Prepare DB
+        run: bundle exec rails db:prepare
+
+      - name: Run tests
+        run: bundle exec rails test
