@@ -66,4 +66,4 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "view_component", "~> 4.2"
+gem "view_component", "~> 4.3"
